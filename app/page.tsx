@@ -1,4 +1,4 @@
-import PokemonList from '@/components/PokemonList';
+import PokemonList from "@/components/PokemonList";
 
 export default async function Home() {
   const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=20");
