@@ -1,17 +1,46 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import Image from "next/image";
+import Link from "next/link";
 
-async function getPokemonData(name: string) {
-  const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
-  return response.json()
+interface PokemonStat {
+  base_stat: number;
+  stat: {
+    name: string;
+  };
 }
 
-export default async function PokemonPage({ params }: { params: { name: string } }) {
-  const pokemon = await getPokemonData(params.name)
+interface PokemonType {
+  type: {
+    name: string;
+  };
+}
+
+interface PokemonData {
+  name: string;
+  sprites: {
+    front_default: string;
+  };
+  stats: PokemonStat[];
+  types: PokemonType[];
+}
+
+async function getPokemonData(name: string): Promise<PokemonData> {
+  const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+  return response.json();
+}
+
+export default async function PokemonPage({
+  params,
+}: {
+  params: { name: string };
+}) {
+  const pokemon: PokemonData = await getPokemonData(params.name);
 
   return (
     <div className="container mx-auto p-4">
-      <Link href="/" className="text-blue-500 hover:underline mb-4 inline-block">
+      <Link
+        href="/"
+        className="text-blue-500 hover:underline mb-4 inline-block"
+      >
         &larr; Back to list
       </Link>
       <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -29,16 +58,20 @@ export default async function PokemonPage({ params }: { params: { name: string }
           <div className="md:w-1/2">
             <h2 className="text-xl font-semibold mb-2">Stats</h2>
             <ul>
-              {pokemon.stats.map((stat: { stat: { name: string }; base_stat: number }) => (
+              {pokemon.stats.map((stat) => (
                 <li key={stat.stat.name} className="mb-1">
-                  <span className="capitalize">{stat.stat.name}:</span> {stat.base_stat}
+                  <span className="capitalize">{stat.stat.name}:</span>{" "}
+                  {stat.base_stat}
                 </li>
               ))}
             </ul>
             <h2 className="text-xl font-semibold mt-4 mb-2">Types</h2>
             <ul className="flex gap-2">
-              {pokemon.types.map((type: { type: { name: string } }) => (
-                <li key={type.type.name} className="bg-gray-200 px-2 py-1 rounded capitalize">
+              {pokemon.types.map((type) => (
+                <li
+                  key={type.type.name}
+                  className="bg-gray-200 px-2 py-1 rounded capitalize"
+                >
                   {type.type.name}
                 </li>
               ))}
@@ -47,5 +80,5 @@ export default async function PokemonPage({ params }: { params: { name: string }
         </div>
       </div>
     </div>
-  )
+  );
 }
